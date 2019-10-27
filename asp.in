@@ -338,8 +338,33 @@ dispatch_action() {
 
 initialize || log_fatal 'failed to initialize asp repository in %s' "$ASPROOT"
 
-while getopts ':a:fhV' flag; do
+while getopts ':a:fhV-:' flag; do
   case $flag in
+    -)
+      case "${OPTARG}" in
+        arch)
+          if [[ -n "${!OPTIND}" ]] ; then
+            OPT_ARCH="${!OPTIND}"
+            (( ++OPTIND ))
+          else
+            log_fatal "option '-%s' requires an argument" "$OPTARG"
+          fi
+          ;;
+        force)
+          OPT_FORCE=1
+          ;;
+        help)
+          usage
+          exit 0
+          ;;
+        version)
+          version
+          exit 0
+          ;;
+        *)
+          log_fatal "invalid option -- '%s'" "$OPTARG"
+          ;;
+      esac;;
     a)
       OPT_ARCH=$OPTARG
       ;;
